@@ -71,35 +71,5 @@
     </html>
     ```
 10.  Create an endpoint to be accessible a user with ROLE_USER:
-    
-    ```
-    grails create-controller admin
-    ```
 12.  Edit  grails-app/controllers/grails/security/test/UserController.groovy to resemble the following:
-    
-    ```
-    package grails.security.test
-    
-    import grails.plugin.springsecurity.annotation.Secured
-    
-    @Secured(['ROLE_ADMIN'])
-    class AdminController {
-        def index() {
-            [message: "Hello Admin"]
-        }
-    }
-    ```
-12.  Add a GSP view the index action above in grails-app/views/user/index.gsp:
-
-    ```
-    <html>
-        <head>
-            <meta name="layout" content="main">
-        </head>
-        <body>
-            <div id="content">
-                <h1>${message}</h1>
-            </div>
-        </body>
-    </html>
-    ```
+13.  Add a GSP view the index action above in grails-app/views/user/index.gsp:
