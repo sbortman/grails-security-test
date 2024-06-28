@@ -1,23 +1,105 @@
-## Grails 6.2.0 Documentation
+# Steps to create secure grails application
 
-- [User Guide](https://docs.grails.org/6.2.0/guide/index.html)
-- [API Reference](https://docs.grails.org/6.2.0/api/index.html)
-- [Grails Guides](https://guides.grails.org/index.html)
----
+1.  Create a new grails application:
+    ```
+    grails create-app grails-security-test
+    ```
+2.  Add the Spring Security Core plugin dependency to build.gradle:
+    ```
+    implementation( 'org.grails.plugins:spring-security-core:6.1.1' )
+    ```
+3.  Create grails-app/spring/resources.groovy file with the following contents:
+    ```
+    beans = {
+    }
+    ```
+4.  Run the security init script:
+    ```
+    ./gradlew runCommand "-Pargs=s2-quickstart grails.security.test SecUser SecRole"
+    ```
+5.  Edit logging configuration in grails-app/config/logback.xml:
+    ```
+    <logger name="grails.security.test" level="info" additivity="false">
+       <appender-ref ref="STDOUT" />
+    </logger>
+    ```
+6.  Create some sample users/roles in grails-app/init/BootStrap.groovy:
+    ```
+    SecUser.withTransaction { status ->
+      def adminRole = SecRole.findOrSaveWhere( authority: 'ROLE_ADMIN' )
+      def userRole = SecRole.findOrSaveWhere( authority: 'ROLE_USER' )
 
-## Feature scaffolding documentation
+      def adminUser = SecUser.findOrSaveWhere( username: 'admin', password: 'admin' )
+      if ( !adminUser.authorities.contains( adminRole ) ) {
+        SecUserSecRole.create( adminUser, adminRole, true )
+      }
 
-- [Grails Scaffolding Plugin documentation](https://grails.github.io/scaffolding/latest/groovydoc/)
+      def regularUser = SecUser.findOrSaveWhere( username: 'user', password: 'user' )
+      if ( !regularUser.authorities.contains( userRole ) ) {
+        SecUserSecRole.create( regularUser, userRole, true )
+      }
+    }
+    ```
+7.  Create an endpoint to be accessible a user with ROLE_USER:
+    ``` 
+    grails create-controller user
+    ```
+8.  Edit  grails-app/controllers/grails/security/test/UserController.groovy to resemble the following:
+    ```
+    package grails.security.test
+    
+    import grails.plugin.springsecurity.annotation.Secured
+    
+    @Secured(['ROLE_USER'])
+    class UserController {
+        def index() {
+            [message: "Hello User"]
+        }
+    }
+    ```
+9.  Add a GSP view the index action above in grails-app/views/user/index.gsp
+    ```
+    <html>
+        <head>
+            <meta name="layout" content="main">
+        </head>
+        <body>
+            <div id="content">
+                <h1>${message}</h1>
+            </div>
+        </body>
+    </html>
+    ```
+10.  Create an endpoint to be accessible a user with ROLE_USER:
 
-- [https://grails-fields-plugin.github.io/grails-fields/latest/guide/index.html](https://grails-fields-plugin.github.io/grails-fields/latest/guide/index.html)
+    ```
+    grails create-controller admin
+    ```
+11.  Edit  grails-app/controllers/grails/security/test/UserController.groovy to resemble the following:
+    
+    ```
+    package grails.security.test
+    
+    import grails.plugin.springsecurity.annotation.Secured
+    
+    @Secured(['ROLE_ADMIN'])
+    class AdminController {
+        def index() {
+            [message: "Hello Admin"]
+        }
+    }
+    ```
+12.  Add a GSP view the index action above in grails-app/views/user/index.gsp:
 
-## Feature asset-pipeline-grails documentation
-
-- [Grails Asset Pipeline Core documentation](https://www.asset-pipeline.com/manual/)
-
-## Feature geb documentation
-
-- [Grails Geb Functional Testing for Grails documentation](https://github.com/grails3-plugins/geb#readme)
-
-- [https://www.gebish.org/manual/current/](https://www.gebish.org/manual/current/)
-
+    ```
+    <html>
+        <head>
+            <meta name="layout" content="main">
+        </head>
+        <body>
+            <div id="content">
+                <h1>${message}</h1>
+            </div>
+        </body>
+    </html>
+    ```
