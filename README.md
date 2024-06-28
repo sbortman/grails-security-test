@@ -71,5 +71,9 @@
     </html>
     ```
 10.  Create an endpoint to be accessible a user with ROLE_USER:
-12.  Edit  grails-app/controllers/grails/security/test/UserController.groovy to resemble the following:
-13.  Add a GSP view the index action above in grails-app/views/user/index.gsp:
+
+    ```
+    grails create-controller admin
+    ```
+11.  Edit  grails-app/controllers/grails/security/test/UserController.groovy to resemble the following:
+12.  Add a GSP view the index action above in grails-app/views/user/index.gsp:
